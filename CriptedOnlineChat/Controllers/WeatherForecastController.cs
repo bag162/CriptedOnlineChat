@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using CriptedOnlineChat.DB;
+using CriptedOnlineChat.DB.DBModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CriptedOnlineChat.Controllers
 {
@@ -10,14 +13,15 @@ namespace CriptedOnlineChat.Controllers
         {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
-
+        private ApplicationContext ApplicationContext { get; set; }
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, ApplicationContext applicationContext)
         {
             _logger = logger;
+            ApplicationContext = applicationContext;
         }
-        f
+
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
