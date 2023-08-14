@@ -1,10 +1,11 @@
 ﻿using CriptedOnlineChat.DB;
+using CriptedOnlineChat.DB.DBModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace CriptedOnlineChat.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -16,43 +17,19 @@ namespace CriptedOnlineChat.Controllers
         }
 
 
-        [HttpGet]
-        public string CheckEmploymentLogin(string login)
-        {
-            bool employment = applicationContext.Users.Any(x => x.Login == login);
-            return JsonConvert.SerializeObject(employment);
-        }
-
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<UserController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public string RegisterNewUser([FromBody]User newUser)
         {
-        }
-
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            if (!applicationContext.Users.Any(x => x.Login == newUser.Login))
+            {
+                this.applicationContext.Users.Add(new DB.DBModels.User() { Login = newUser.Login });
+                this.applicationContext.SaveChanges();
+                return JsonConvert.SerializeObject("true");
+            }
+            else
+            {
+                return JsonConvert.SerializeObject("Error");
+            }
         }
     }
 }

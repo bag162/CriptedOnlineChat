@@ -1,11 +1,14 @@
+import { FormsModule } from "@angular/forms";
+import { RegisterUserComponent } from "./RegisterUserComponent/registerUserComponent";
 import { ContactListComponent } from "./contact.list.component";
 import { NgModule } from '@angular/core';
 
 @NgModule({
   declarations: [
-    ContactListComponent
+    ContactListComponent,
+    RegisterUserComponent
   ],
-  imports: [
+  imports:[FormsModule
     
   ],
   providers: [],
