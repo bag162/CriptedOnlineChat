@@ -2,6 +2,7 @@ import { FormsModule } from "@angular/forms";
 import { RegisterUserComponent } from "./RegisterUserComponent/registerUserComponent";
 import { ContactListComponent } from "./contact.list.component";
 import { NgModule } from '@angular/core';
+import { RSAService } from "../rsa";
 
 @NgModule({
   declarations: [
@@ -9,9 +10,8 @@ import { NgModule } from '@angular/core';
     RegisterUserComponent
   ],
   imports:[FormsModule
-    
   ],
-  providers: [],
+  providers: [RSAService],
   bootstrap: [],
   exports: [ContactListComponent]
 })

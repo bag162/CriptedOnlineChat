@@ -2,38 +2,67 @@ import { HttpClient } from '@angular/common/http';
 import { retagAllTsFiles } from '@angular/compiler-cli/src/ngtsc/shims';
 import { Component, Inject, OnInit } from '@angular/core';
 import { getBaseUrl } from 'src/main';
+import { db, User } from 'src/db';
+import { liveQuery } from 'dexie';
+import { RSAService } from 'src/app/rsa';
+declare var $: any;
 
 @Component({
     selector: 'register-user-component',
-    templateUrl: 'registerUserComponent.html'
+    templateUrl: 'registerUserComponent.html',
+    providers: [RSAService]
 })
-
+@Inject
 export class RegisterUserComponent implements OnInit {
     httpClient: any;
-    constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-        this.registerUser = new registerUser;
+    rsaService: RSAService;
+    constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string, rsaService: RSAService) {
         this.baseUrl = baseUrl;
+        this.rsaService = rsaService;
+        this.currentUser = { Login: "" };
     }
 
-    ngOnInit() { }
-    public baseUrl: string;
-    public registerUser: registerUser;
+    async ngOnInit() {
+        var user = await db.User.toArray();
+        if (user.length != 0) {
+            console.log("Пользователь зарегестрирован")
+            this.currentUser = user[0];
+            $("#inputLogin").prop("disabled", true);
+            $("#sendButton").hide();
+        }
+        console.log(this.rsaService.GenerateKeyPairs);
 
-    public CheckEmplyment() {
-        if (this.registerUser.login == "") {
+    }
+    public baseUrl: string;
+    public currentUser: User;
+
+    public async RegisterUser() {
+        if (this.currentUser.Login == "") {
             // add notify
             return;
         }
-        this.http.post(this.baseUrl + "user", this.registerUser).subscribe(result => console.log(result));
+        await this.http.post<string>(this.baseUrl + "user", this.currentUser).subscribe(result => this.DisplayNotify(result));
         return;
     }
-}
 
+    public async DisplayNotify(resultRequest: string) {
+        if (resultRequest == "true") {
+            await db.User.add(await this.currentUser, 0);
+            console.log(resultRequest + "true")
+            $("#inputLogin").prop("disabled", true);
+            $("#sendButton").hide();
 
-class registerUser {
-    constructor()
-    {
-        this.login = "";
+            $("#succesNotify").show(500);
+            setTimeout(() => {
+                $("#succesNotify").hide(500)
+            }, 2500);
+        }
+        else {
+            console.log(resultRequest + "false")
+            $("#dangerNotify").show(500);
+            setTimeout(() => {
+                $("#dangerNotify").hide(500)
+            }, 2500);
+        }
     }
-    public login: string;
 }

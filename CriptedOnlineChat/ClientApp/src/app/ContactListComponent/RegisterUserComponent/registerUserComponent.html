@@ -1,10 +1,23 @@
 <div class="form-group mx-sm-3 mb-2">
+    <div>
+        Login
+    </div>
     <div class="row">
         <div class="col-9">
-            <input [(ngModel)]="registerUser.login" class="form-control" id="inputPassword2" placeholder="Login">
+            <input [(ngModel)]="currentUser.Login" class="form-control" id="inputLogin" placeholder="Login">
         </div>
         <div class="col-2">
-            <button (click)="CheckEmplyment()" type="submit" class="btn btn-primary mb-2">Register</button>
+            <button (click)="RegisterUser()" type="submit" class="btn btn-primary mb-2"
+                id="sendButton">Register</button>
         </div>
+        <div class="mt-1">
+            <div class="alert alert-success" role="alert" id="succesNotify" style="display: none;">
+                Пользователь успешно зарегенистрован
+            </div>
+            <div class="alert alert-danger" role="alert" id="dangerNotify" style="display: none;">
+                Данный Login уже занят
+            </div>
+        </div>
+
     </div>
 </div>

@@ -28,7 +28,7 @@ namespace CriptedOnlineChat.Controllers
             }
             else
             {
-                return JsonConvert.SerializeObject("Error");
+                return JsonConvert.SerializeObject("false");
             }
         }
     }

@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { ContactListModule } from './ContactListComponent/ContactListModule';
 import { MessageListModule } from './MessageListComponent/MessageListModule';
+import { RSAService } from './rsa';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import { MessageListModule } from './MessageListComponent/MessageListModule';
     RouterModule.forRoot([
     ])
   ],
-  providers: [],
+  providers: [RSAService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

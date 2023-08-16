@@ -100,8 +100,6 @@ body{margin-top:20px;}
     background-image: -ms-linear-gradient(right, #e9eff5, #ffffff);
     /* IE10 */
     background-image: -o-linear-gradient(right, #e9eff5, #ffffff);
-    /* Opera 11.10+ */
-    background-image: linear-gradient(right, #e9eff5, #ffffff);
 }
 
 .users .person.active-user {
@@ -116,8 +114,6 @@ body{margin-top:20px;}
     background-image: -ms-linear-gradient(right, #f7f9fb, #ffffff);
     /* IE10 */
     background-image: -o-linear-gradient(right, #f7f9fb, #ffffff);
-    /* Opera 11.10+ */
-    background-image: linear-gradient(right, #f7f9fb, #ffffff);
 }
 
 .users .person:last-child {
