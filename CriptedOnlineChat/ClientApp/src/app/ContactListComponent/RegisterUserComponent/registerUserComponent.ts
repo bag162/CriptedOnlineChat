@@ -1,9 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { retagAllTsFiles } from '@angular/compiler-cli/src/ngtsc/shims';
 import { Component, Inject, OnInit } from '@angular/core';
-import { getBaseUrl } from 'src/main';
 import { db, User } from 'src/db';
-import { liveQuery } from 'dexie';
 import { RSAService } from 'src/app/rsa';
 declare var $: any;
 
@@ -12,7 +9,7 @@ declare var $: any;
     templateUrl: 'registerUserComponent.html',
     providers: [RSAService]
 })
-@Inject
+
 export class RegisterUserComponent implements OnInit {
     httpClient: any;
     rsaService: RSAService;
@@ -30,7 +27,7 @@ export class RegisterUserComponent implements OnInit {
             $("#inputLogin").prop("disabled", true);
             $("#sendButton").hide();
         }
-        console.log(this.rsaService.GenerateKeyPairs);
+        (await this.rsaService.GenerateKeyPairs().then(x => console.log(x)));
 
     }
     public baseUrl: string;
