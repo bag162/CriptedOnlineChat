@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CriptedOnlineChat.DB.DBModels
@@ -10,6 +11,6 @@ namespace CriptedOnlineChat.DB.DBModels
         public DateTime DateTime { get; set; }
         public int UserId { get; set; }
         [ForeignKey("UserId")]
-        public User User { get; set; }
+        public IdentityUser User { get; set; }
     }
 }

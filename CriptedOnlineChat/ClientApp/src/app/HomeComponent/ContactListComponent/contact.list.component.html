@@ -1,0 +1,24 @@
+<div class="users-container">
+    <div class="chat-search-box">
+        <div class="input-group">
+            <input class="form-control" placeholder="Search">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-info">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <ng-template ngFor let-contact [ngForOf]="contactList">
+        <ul class="users" (click)="ChangeDisplayedMessages(contact.Login)">
+            <li class="person">
+                <div class="user">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaNDp4YnUOqj50lXmzwcNmA6x6tk__ZJoq7Q&usqp=CAU">
+                </div>
+                <p class="name-time">
+                    <span class="name">{{contact.Login}}</span>
+                </p>
+            </li>
+        </ul>
+    </ng-template>
+</div>
