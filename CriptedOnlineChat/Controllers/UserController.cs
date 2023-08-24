@@ -1,4 +1,5 @@
-﻿using CriptedOnlineChat.DB;
+﻿using CriptedOnlineChat.Controllers.DTO;
+using CriptedOnlineChat.DB;
 using CriptedOnlineChat.DB.DBModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace CriptedOnlineChat.Controllers
 {
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -21,27 +22,27 @@ namespace CriptedOnlineChat.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<string> RegisterNewUser(string login, string password)
+        public async Task<string> Registration([FromBody]UserRegisterDTO registerUser)
         {
-            var user = new AppUser() { UserName = login };
-            var result = await userManager.CreateAsync(user, password);
+            var user = new AppUser() { UserName = registerUser.login, EmailConfirmed = true };
+            var result = await userManager.CreateAsync(user, registerUser.password);
             if (result.Succeeded)
             {
-                await signInManager.SignInAsync(user, isPersistent: false);
+                await signInManager.SignInAsync(user, isPersistent: registerUser.isPersistent);
             }
             else
             {
-                return await Task.FromResult(result.Errors.ToString());
+                return await Task.FromResult(result.Errors.FirstOrDefault().Description);
             }
 
-            return await Task.FromResult("success");
+            return await Task.FromResult("true");
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<string> LoginUser(string login, string password)
+        public async Task<string> Login([FromBody] UserLoginDTO loginnedUser)
         {
-            var result = await signInManager.PasswordSignInAsync(login, password, false, lockoutOnFailure: false);
+            var result = await signInManager.PasswordSignInAsync(loginnedUser.login, loginnedUser.password, loginnedUser.isPersistent, lockoutOnFailure: false);
             if (result.Succeeded)
             {
                 return await Task.FromResult("true");

@@ -9,8 +9,8 @@ namespace CriptedOnlineChat.DB.DBModels
         public int Id { get; set; }
         public string Data { get; set; }
         public DateTime DateTime { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public IdentityUser User { get; set; }
+        public AppUser User { get; set; }
     }
 }

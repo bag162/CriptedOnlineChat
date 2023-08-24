@@ -1,23 +1,37 @@
-<div class="form-group mx-sm-3 mb-2">
-    <div>
-        Login
-    </div>
-    <div class="row">
-        <div class="col-9">
-            <input [(ngModel)]="currentUser.Login" class="form-control" id="inputLogin" placeholder="Login">
+<div class="d-flex justify-content-center">
+    <form class="border col-md-4 p-3 mt-5">
+        <h2>Registration</h2>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Login</label>
+            <input (click)="deleteErrorNotify()" [(ngModel)]="registerUser.login" name="login" type="email" class="form-control"
+                id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter login">
+                <div class="invalid-feedback">
+                </div>
         </div>
-        <div class="col-2">
-            <button (click)="RegisterUser()" type="submit" class="btn btn-primary mb-2"
-                id="sendButton">Register</button>
+        <div class="form-group">
+            <label>Password</label>
+            <input (click)="deleteErrorNotify()" [(ngModel)]="registerUser.password" name="password" type="password" class="form-control"
+                id="exampleInputPassword1" placeholder="Enter password">
+                <div class="invalid-feedback">
+                </div>
         </div>
-        <div class="mt-1">
-            <div class="alert alert-success" role="alert" id="succesNotify" style="display: none;">
-                Пользователь успешно зарегенистрован
+        <div class="form-group">
+            <label>Repeat password</label>
+            <input (click)="deleteErrorNotify()" [(ngModel)]="registerUser.repeatPassword" name="repeatPassword" type="password" class="form-control"
+                id="exampleInputPassword1" placeholder="Re-enter your password">
+            <div class="invalid-feedback invalidMessage">
+                Registration error
             </div>
-            <div class="alert alert-danger" role="alert" id="dangerNotify" style="display: none;">
-                Данный Login уже занят
-            </div>
         </div>
-
-    </div>
+        <div class="form-check pt-1 pb-1">
+            <input [(ngModel)]="registerUser.isPersistent" name="isPersistent" type="checkbox" class="form-check-input"
+                id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Remember me</label>
+        </div>
+        <button (click)="registerNewUser()" type="submit" class="btn btn-primary">Registration</button>
+        <div>
+            <button (click)="redirectToLoginPage()" type="submit" class="btn btn-outline-success mt-3">I have an
+                account. Login</button>
+        </div>
+    </form>
 </div>

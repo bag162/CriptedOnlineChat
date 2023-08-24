@@ -2,6 +2,7 @@ using CriptedOnlineChat.Controllers;
 using CriptedOnlineChat.DB;
 using CriptedOnlineChat.DB.DBModels;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +14,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConStri
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddIdentityServer()
-    .AddApiAuthorization<AppUser, ApplicationDbContext>();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Default Password settings.
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequiredUniqueChars = 1;
+});
 
 builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
@@ -24,7 +32,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
 
-    options.LoginPath = "/Login";
+    options.LoginPath = "/login";
     options.AccessDeniedPath = "/AccessDenied";
     options.SlidingExpiration = true;
 });
@@ -50,18 +58,26 @@ app.UseWebSockets(new WebSocketOptions
     KeepAliveInterval = TimeSpan.FromSeconds(120),
 });
 
-app.UseAuthorization();
-app.UseIdentityServer();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseCors("CorsPolicy");
-app.UseRouting();
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
+    pattern: "{controller}/{action}");
+app.MapControllerRoute(
+    name: "api",
+    pattern: "api/{controller}/{action}");
+app.UseRouting();
+
+
+
 app.MapHub<SchatHub>("/schatHub");
+
+app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapFallbackToFile("index.html"); ;
 

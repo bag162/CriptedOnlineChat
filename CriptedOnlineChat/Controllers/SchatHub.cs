@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace CriptedOnlineChat.Controllers
 {
     [Route("schatHub")]
-    [Authorize]
     public class SchatHub : Hub
     {
         public async Task SendMessage(string message, string recipientLogin)

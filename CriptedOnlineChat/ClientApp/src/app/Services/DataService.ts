@@ -5,4 +5,4 @@ import { Subject } from 'rxjs';
 export class DataService {
     
     public currentDisplayedLogin = new Subject<string>();
-}
+} 
