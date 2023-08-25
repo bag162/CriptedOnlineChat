@@ -1,22 +1,23 @@
 using CriptedOnlineChat.Controllers;
 using CriptedOnlineChat.DB;
 using CriptedOnlineChat.DB.DBModels;
+using CriptedOnlineChat.DBServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+/*IDENTITY*/
+
+
 // Identity service
 builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-// DB context
-var connectionString = builder.Configuration.GetConnectionString("DefaultConString");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
 
+// configure identity password requres
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    // Default Password settings.
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = false;
@@ -24,8 +25,24 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredUniqueChars = 1;
 });
 
+
+/*DATABASE*/
+
+
+// DB context
+var connectionString = builder.Configuration.GetConnectionString("DefaultConString");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+// DB Services
+builder.Services.AddScoped<IUserDBService, UserDBService>();
+
+
+/*OTHER*/
+
 builder.Services.AddSignalR();
-builder.Services.AddControllersWithViews();
+
+// Configure cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
     // Cookie settings
@@ -36,7 +53,11 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/AccessDenied";
     options.SlidingExpiration = true;
 });
+
+// Add WebSocket dep
 builder.Services.AddSingleton<SchatHub>();
+
+// Configure CORS Policy
 builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 {
     builder

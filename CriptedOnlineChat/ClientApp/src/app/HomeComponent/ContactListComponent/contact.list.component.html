@@ -1,15 +1,16 @@
 <div class="users-container">
     <div class="chat-search-box">
         <div class="input-group">
-            <input class="form-control" placeholder="Search">
+            <input [(ngModel)]="searchUserLogin.login" class="form-control" placeholder="Search">
             <div class="input-group-btn">
-                <button type="button" class="btn btn-info">
+                <button type="button" class="btn btn-info" (click)="searchUsers()">
                     <i class="fa fa-search"></i>
                 </button>
             </div>
         </div>
     </div>
-    <ng-template ngFor let-contact [ngForOf]="contactList">
+
+    <ng-template ngFor let-contact [ngForOf]="contactList" class="contactList">
         <ul class="users" (click)="ChangeDisplayedMessages(contact.Login)">
             <li class="person">
                 <div class="user">

@@ -103,8 +103,8 @@ export interface Message {
 export interface Contact {
     id?: number;
     Login: string;
-    PrivateKey: PrivateKey;
-    PublicKey: PublicKey;
+    PrivateKey?: PrivateKey;
+    PublicKey?: PublicKey;
 }
 
 export interface PrivateKey {

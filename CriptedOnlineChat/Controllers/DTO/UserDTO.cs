@@ -13,4 +13,9 @@
         public string password { get; set; }
         public bool isPersistent { get; set; }
     }
+
+    public class FindUserDTO
+    {
+        public string login { get; set; }
+    }
 }

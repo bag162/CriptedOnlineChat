@@ -25,6 +25,13 @@ export class UserService {
         return result;
     }
 
+    public async FindUsers(findedUser: FindUserDTO) : Promise<string[]>
+    {
+        var result = await this.httpClient.post(this.baseUrl + "user/FindUser", findedUser).toPromise();
+        console.log(result)
+        return <string[]>result;
+    }
+
 
     
 
@@ -42,4 +49,9 @@ export class RegisterUserDTO {
     password: string = "";
     repeatPassword: string = "";
     isPersistent: boolean = false;
+}
+
+@Injectable({ providedIn: 'root' })
+export class FindUserDTO {
+    login: string = "";
 }

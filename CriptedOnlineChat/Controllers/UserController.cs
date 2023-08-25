@@ -1,10 +1,9 @@
 ﻿using CriptedOnlineChat.Controllers.DTO;
-using CriptedOnlineChat.DB;
 using CriptedOnlineChat.DB.DBModels;
+using CriptedOnlineChat.DBServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace CriptedOnlineChat.Controllers
 {
@@ -14,10 +13,12 @@ namespace CriptedOnlineChat.Controllers
     {
         private UserManager<AppUser> userManager { get; set; }
         private SignInManager<AppUser> signInManager { get; set; }
-        public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        private IUserDBService userDbService;
+        public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IUserDBService userDBService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.userDbService = userDBService;
         }
 
         [HttpPost]
@@ -55,6 +56,13 @@ namespace CriptedOnlineChat.Controllers
         public async Task<bool> IsAuthenticated()
         {
             return await Task.FromResult(User.Identity.IsAuthenticated);
+        }
+
+        [HttpPost]
+        public async Task<string[]> FindUser([FromBody] FindUserDTO findedUser)
+        {
+            string[] users = userDbService.FindUsersByLogin(findedUser.login).Result.Select(x => x.UserName).ToArray();
+            return await Task.FromResult(users);
         }
     }
 }

@@ -9,6 +9,8 @@ import { AuthorizeGuard } from './api-authorize/authorize.guard';
 import { HomeComponent } from './HomeComponent/home.component';
 import { HomeAppModule } from './HomeComponent/homeApp.module';
 import { HttpClientModule } from '@angular/common/http';
+import { Observable, Subject } from 'rxjs';
+
 
 @NgModule({
   declarations: [
