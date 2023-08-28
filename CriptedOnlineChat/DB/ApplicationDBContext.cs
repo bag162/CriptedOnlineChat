@@ -10,6 +10,7 @@ namespace CriptedOnlineChat.DB
     {
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Message> Messaages { get; set; }
+        public DbSet<TradeKeys> TradeKeys { get; set; }
 
         public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions)
             : base(options, operationalStoreOptions)

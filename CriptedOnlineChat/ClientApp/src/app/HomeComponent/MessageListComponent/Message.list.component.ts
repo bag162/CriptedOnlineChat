@@ -1,8 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { timer } from 'rxjs';
-import { AppDB, Message, User } from 'src/db';
-import { DataService } from '../../Services/DataService';
-import { WebSocketService } from '../../Services/WebSocket.service';
+import { AppDB, Contact, Message, PrivateKey, PublicKey, User } from 'src/db';
+import { DataService } from '../../Services/data.service';
+import { WebSocketService } from '../../Services/websocket.service';
+import { SendMessageDTO } from 'src/app/Services/message.service';
+import { RSAService } from 'src/app/Services/rsa.service';
+import * as forge from 'node-forge';
 declare var $: any;
 
 @Component({
@@ -12,22 +15,30 @@ declare var $: any;
 })
 export class MessageListComponent {
   @Input() public displayedUserLogin?: string;
+  // services
   private DataService: DataService;
   private WebSocketService: WebSocketService;
+  private db: AppDB;
+  private rsaService: RSAService;
+
+  // variables to display
   public messageList: Message[] = [];
   public user: User = { Login: "" };
-  private db: AppDB;
+  public isKeyExchangeCompleted: boolean = false;
+
+  // variables to html
   public sendedMessage: string = "";
   public dispayedMessagesLogin: string = "";
 
-  constructor(db: AppDB, dataService: DataService, webSocketService: WebSocketService) {
+  constructor(db: AppDB, dataService: DataService, webSocketService: WebSocketService, rsaService: RSAService) {
     this.DataService = dataService;
     this.db = db;
     this.WebSocketService = webSocketService;
+    this.rsaService = rsaService;
   }
 
   ngDoCheck() {
-    if (this.messageList.length == 0) {
+    if (this.isKeyExchangeCompleted) {
       $(".messageClass").hide();
     }
     else {
@@ -40,12 +51,18 @@ export class MessageListComponent {
     await this.DataService.currentDisplayedLogin.subscribe((currentDisplayedLogin: string) => {
       this.DisplayMissages(currentDisplayedLogin)
       this.dispayedMessagesLogin = currentDisplayedLogin;
+      $('.recipientName').text(currentDisplayedLogin);
     });
     await this.db.User.toArray().then(x => this.user = x[0]);
   }
 
   public async DisplayMissages(dispayedMessagesLogin: string) {
-    await this.db.Messages.where("RecipientLogin").equalsIgnoreCase(dispayedMessagesLogin).toArray().then(x => this.messageList = x);
+    var messagesToDisplay: Message[] = await this.db.Messages.filter(x => x.RecipientLogin == dispayedMessagesLogin).toArray();
+    console.log(messagesToDisplay)
+    messagesToDisplay.forEach(async element => {
+      let decriptedNewMessage: Message = { Data: element.Data, IsSender: element.IsSender, RecipientLogin: element.RecipientLogin }
+      this.messageList.push(decriptedNewMessage)
+    });
   }
 
   public async SendMessage() {
@@ -53,6 +70,19 @@ export class MessageListComponent {
       return;
     }
 
-    this.WebSocketService.sendMessage(this.sendedMessage, this.dispayedMessagesLogin);
+    let contactForSend: Contact = await this.db.Contacts.filter(x => x.Login == this.dispayedMessagesLogin).first();
+    let key: PublicKey = await this.db.PublicKeyForEncript.filter(x => x.id == contactForSend.PublicKeyForEncriptId).first();
+    var keyForEncript = forge.pki.rsa.setPublicKey(key.n, key.e);
+    let encriptedMessage: string = await this.rsaService.EncriptMessage(this.sendedMessage, keyForEncript);
+    let message: SendMessageDTO = {
+      data: encriptedMessage, senderId: this.user.id,
+      recipientId: contactForSend.ContactId
+    };
+    await this.WebSocketService.sendMessage(message);
+    let addedMessage: Message = { Data: this.sendedMessage, RecipientLogin: contactForSend.Login, IsSender: true};
+    await this.db.Messages.add(addedMessage);
+    this.messageList = [];
+    this.sendedMessage = "";
+    await this.DisplayMissages(contactForSend.ContactId);
   }
 }

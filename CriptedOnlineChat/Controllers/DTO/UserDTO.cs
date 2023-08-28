@@ -17,5 +17,14 @@
     public class FindUserDTO
     {
         public string login { get; set; }
+        public string? id { get; set; }
+    }
+
+    public class FinishRegisterUserDTO
+    {
+        public bool isSuccess { get; set; }
+        public string descriptionError { get; set; }
+        public string id { get; set; }
+        public string login { get; set; }
     }
 }

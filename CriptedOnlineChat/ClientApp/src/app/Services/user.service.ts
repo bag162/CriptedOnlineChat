@@ -19,17 +19,16 @@ export class UserService {
         })
     }
 
-    public async RegisterUser(registerUserDTO: RegisterUserDTO) : Promise<string>
+    public async RegisterUser(registerUserDTO: RegisterUserDTO) : Promise<FinishRegisterUserDTO>
     {
-        var result = await this.httpClient.post(this.baseUrl + "user/registration", registerUserDTO, {responseType: 'text'}).toPromise();
+        var result = await this.httpClient.post<FinishRegisterUserDTO>(this.baseUrl + "user/registration", registerUserDTO).toPromise();
         return result;
     }
 
-    public async FindUsers(findedUser: FindUserDTO) : Promise<string[]>
+    public async FindUsers(findedUser: FindUserDTO) : Promise<FindUserDTO[]>
     {
         var result = await this.httpClient.post(this.baseUrl + "user/FindUser", findedUser).toPromise();
-        console.log(result)
-        return <string[]>result;
+        return <FindUserDTO[]>result;
     }
 
 
@@ -53,5 +52,14 @@ export class RegisterUserDTO {
 
 @Injectable({ providedIn: 'root' })
 export class FindUserDTO {
+    login: string = "";
+    id: string = "";
+}
+
+@Injectable({ providedIn: 'root' })
+export class FinishRegisterUserDTO {
+    isSuccess: boolean = false;
+    descriptionError: string = "";
+    id: string = "";
     login: string = "";
 }

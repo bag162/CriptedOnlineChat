@@ -1,3 +1,4 @@
+using CriptedOnlineChat;
 using CriptedOnlineChat.Controllers;
 using CriptedOnlineChat.DB;
 using CriptedOnlineChat.DB.DBModels;
@@ -35,13 +36,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // DB Services
-builder.Services.AddScoped<IUserDBService, UserDBService>();
-
+builder.Services.AddScoped<IMessagesService, MessageService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITradeKeysService, TradeKeysService>();
+builder.Services.AddScoped<SchatHub>();
 
 /*OTHER*/
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.MaximumReceiveMessageSize = 2000000;
+    hubOptions.EnableDetailedErrors = true;
+    hubOptions.MaximumParallelInvocationsPerClient = 10;
+});
 
+builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 // Configure cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -55,7 +64,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 // Add WebSocket dep
-builder.Services.AddSingleton<SchatHub>();
 
 // Configure CORS Policy
 builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
@@ -64,11 +72,10 @@ builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()
-        .WithOrigins("http://localhost:44457", "http://localhost:5172", "http://localhost:38179");
+        .SetIsOriginAllowed(_ => true);
 }));
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -79,27 +86,20 @@ app.UseWebSockets(new WebSocketOptions
     KeepAliveInterval = TimeSpan.FromSeconds(120),
 });
 
-
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
+app.UseRouting();
 app.UseCors("CorsPolicy");
-
+app.UseAuthorization();
+app.UseAuthentication();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action}");
 app.MapControllerRoute(
     name: "api",
     pattern: "api/{controller}/{action}");
-app.UseRouting();
-
-
 
 app.MapHub<SchatHub>("/schatHub");
-
-app.UseAuthorization();
-app.UseAuthentication();
-
 app.MapFallbackToFile("index.html"); ;
 
 app.Run();

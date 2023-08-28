@@ -3,18 +3,26 @@
         <div class="input-group">
             <input [(ngModel)]="searchUserLogin.login" class="form-control" placeholder="Search">
             <div class="input-group-btn">
-                <button type="button" class="btn btn-info" (click)="searchUsers()">
+                <button type="button" class="searchLoginInfo btn btn-info" (click)="searchUsers()">
                     <i class="fa fa-search"></i>
                 </button>
             </div>
         </div>
+        <div class="searchUsersDisplay card mt-2" style="display: none;">
+            <div class="card-body">
+                Searching new users
+            </div>
+            <button (click)="backToContactListButton()" type="button" class="btn btn-primary btn-lg">Back to Contact
+                list</button>
+        </div>
     </div>
 
-    <ng-template ngFor let-contact [ngForOf]="contactList" class="contactList">
-        <ul class="users" (click)="ChangeDisplayedMessages(contact.Login)">
+    <ng-template ngFor let-contact [ngForOf]="contactList" class="contactList" id="contactList">
+        <ul class="users" (click)="ChangeDisplayedMessages(contact)">
             <li class="person">
                 <div class="user">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaNDp4YnUOqj50lXmzwcNmA6x6tk__ZJoq7Q&usqp=CAU">
+                    <img
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaNDp4YnUOqj50lXmzwcNmA6x6tk__ZJoq7Q&usqp=CAU">
                 </div>
                 <p class="name-time">
                     <span class="name">{{contact.Login}}</span>
@@ -23,3 +31,7 @@
         </ul>
     </ng-template>
 </div>
+
+<script>
+
+</script>

@@ -99,18 +99,63 @@ namespace CriptedOnlineChat.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("RecipientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messaages");
+                });
+
+            modelBuilder.Entity("CriptedOnlineChat.DB.DBModels.TradeKeys", b =>
+                {
+                    b.Property<string>("id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RecipientUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SenderUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("eDataJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("es")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("et")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("nDataJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("ns")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("nt")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("RecipientUserId");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.ToTable("TradeKeys");
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -393,13 +438,40 @@ namespace CriptedOnlineChat.Migrations
 
             modelBuilder.Entity("CriptedOnlineChat.DB.DBModels.Message", b =>
                 {
-                    b.HasOne("CriptedOnlineChat.DB.DBModels.AppUser", "User")
+                    b.HasOne("CriptedOnlineChat.DB.DBModels.AppUser", "Recipient")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("RecipientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("CriptedOnlineChat.DB.DBModels.AppUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("CriptedOnlineChat.DB.DBModels.TradeKeys", b =>
+                {
+                    b.HasOne("CriptedOnlineChat.DB.DBModels.AppUser", "Recipient")
+                        .WithMany()
+                        .HasForeignKey("RecipientUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CriptedOnlineChat.DB.DBModels.AppUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

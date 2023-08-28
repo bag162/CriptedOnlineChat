@@ -1,4 +1,5 @@
-﻿using CriptedOnlineChat.Controllers.DTO;
+﻿using AutoMapper;
+using CriptedOnlineChat.Controllers.DTO;
 using CriptedOnlineChat.DB.DBModels;
 using CriptedOnlineChat.DBServices;
 using Microsoft.AspNetCore.Authorization;
@@ -13,30 +14,34 @@ namespace CriptedOnlineChat.Controllers
     {
         private UserManager<AppUser> userManager { get; set; }
         private SignInManager<AppUser> signInManager { get; set; }
-        private IUserDBService userDbService;
-        public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IUserDBService userDBService)
+        private IUserService userDbService;
+        private IMapper mapper;
+        public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IUserService userDBService, IMapper mapper)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.userDbService = userDBService;
+            this.mapper = mapper;
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<string> Registration([FromBody]UserRegisterDTO registerUser)
+        public async Task<FinishRegisterUserDTO> Registration([FromBody]UserRegisterDTO registerUser)
         {
             var user = new AppUser() { UserName = registerUser.login, EmailConfirmed = true };
+            string userId;
             var result = await userManager.CreateAsync(user, registerUser.password);
             if (result.Succeeded)
             {
                 await signInManager.SignInAsync(user, isPersistent: registerUser.isPersistent);
+                userId = userDbService.FindUsersByLogin(registerUser.login).Result.FirstOrDefault().Id;
             }
             else
             {
-                return await Task.FromResult(result.Errors.FirstOrDefault().Description);
+                return await Task.FromResult(new FinishRegisterUserDTO() { isSuccess = false, descriptionError = result.Errors.FirstOrDefault().Description });
             }
 
-            return await Task.FromResult("true");
+            return await Task.FromResult(new FinishRegisterUserDTO() { isSuccess = true, login = registerUser.login, id = userId });
         }
 
         [HttpPost]
@@ -59,10 +64,12 @@ namespace CriptedOnlineChat.Controllers
         }
 
         [HttpPost]
-        public async Task<string[]> FindUser([FromBody] FindUserDTO findedUser)
+        public async Task<FindUserDTO[]> FindUser([FromBody] FindUserDTO findedUser)
         {
-            string[] users = userDbService.FindUsersByLogin(findedUser.login).Result.Select(x => x.UserName).ToArray();
-            return await Task.FromResult(users);
+            var result = userDbService.FindUsersByLogin(findedUser.login).Result.ToList();
+            result.RemoveAll(x => x.UserName == User.Identity.Name);
+            var users = mapper.Map<FindUserDTO[]>(result);
+            return await Task.FromResult(users.ToArray());
         }
     }
 }
