@@ -57,8 +57,8 @@ export class MessageListComponent {
   }
 
   public async DisplayMissages(dispayedMessagesLogin: string) {
+    this.messageList = [];
     var messagesToDisplay: Message[] = await this.db.Messages.filter(x => x.RecipientLogin == dispayedMessagesLogin).toArray();
-    console.log(messagesToDisplay)
     messagesToDisplay.forEach(async element => {
       let decriptedNewMessage: Message = { Data: element.Data, IsSender: element.IsSender, RecipientLogin: element.RecipientLogin }
       this.messageList.push(decriptedNewMessage)
@@ -83,6 +83,6 @@ export class MessageListComponent {
     await this.db.Messages.add(addedMessage);
     this.messageList = [];
     this.sendedMessage = "";
-    await this.DisplayMissages(contactForSend.ContactId);
+    await this.DisplayMissages(contactForSend.Login);
   }
 }
