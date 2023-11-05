@@ -3,7 +3,6 @@ using CriptedOnlineChat.Controllers;
 using CriptedOnlineChat.DB;
 using CriptedOnlineChat.DB.DBModels;
 using CriptedOnlineChat.DBServices;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,10 +68,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 {
     builder
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials()
-        .SetIsOriginAllowed(_ => true);
+    .SetIsOriginAllowed(origin => true)
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials();
 }));
 
 var app = builder.Build();

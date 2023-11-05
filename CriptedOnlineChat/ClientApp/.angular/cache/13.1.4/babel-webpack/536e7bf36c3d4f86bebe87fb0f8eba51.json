@@ -1,0 +1,1 @@
+{"ast":null,"code":"export const environment = {\n  production: true,\n  basePort: 80,\n  basePath: \"94.103.87.95\"\n};","map":null,"metadata":{},"sourceType":"module"}

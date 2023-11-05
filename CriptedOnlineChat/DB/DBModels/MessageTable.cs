@@ -8,11 +8,7 @@ namespace CriptedOnlineChat.DB.DBModels
     {
         public int Id { get; set; }
         public string Data { get; set; }
-
-        public AppUser Sender { get; set; }
         public string SenderId { get; set; }
-
-        public AppUser Recipient { get; set; }
         public string RecipientId { get; set; }
     }
 }

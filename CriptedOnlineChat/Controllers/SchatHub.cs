@@ -3,6 +3,7 @@ using CriptedOnlineChat.Controllers.DTO;
 using CriptedOnlineChat.DB.DBModels;
 using CriptedOnlineChat.DBServices;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace CriptedOnlineChat.Controllers
 {
+    [EnableCors("CorsPolicy")]
     [Route("schatHub")]
     public class SchatHub : Hub
     {

@@ -94,7 +94,7 @@ export class ContactListComponent {
   }
 
   async AddNewUserToLocalDb(newUser: Contact) {
-    var insertedUser = newUser;
+    let insertedUser: Contact = newUser;
 
     // gen KeyPair
     var rsaKeys = await this.rsaService.GenerateKeyPair();
@@ -112,7 +112,7 @@ export class ContactListComponent {
 
     this.backToContactListButton();
     await this.rsaKeysService.SendRSAPublicKey((await this.db.User.toArray().then(x => { return x[0] })).id,
-      insertedUser.ContactId, rsaKeys.publicKey); // реализовать что бы 2-ой пользователь при получании ключа сразу же то же отправлял свой обратно
+      insertedUser.ContactId, rsaKeys.publicKey);
   }
 
   async backToContactListButton() {

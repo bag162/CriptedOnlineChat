@@ -2,11 +2,23 @@
     <!-- check to job -->
     <span>To: <span class="recipientName name"></span></span>
 </div>
-<div class="chat-container">
-
+<div class="chat-container" id="scrollChat">
     <ul class="chat-box chatContainerScroll">
         <ng-template ngFor let-message [ngForOf]="messageList">
-            <li class="chat-left">
+
+            <li class="chat-left" *ngIf="message.IsSender">
+                <div class="chat-avatar">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaNDp4YnUOqj50lXmzwcNmA6x6tk__ZJoq7Q&usqp=CAU"
+                        alt="Retail Admin">
+
+                    <div class="chat-name" *ngIf="!message.IsSender">{{message.RecipientLogin}}</div>
+                    <div class="chat-name" *ngIf="message.IsSender">{{user.Login}}</div>
+                </div>
+                <div class="chat-text">{{message.Data}}
+                </div>
+            </li>
+
+            <li class="chat-right" *ngIf="!message.IsSender">
                 <div class="chat-avatar">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaNDp4YnUOqj50lXmzwcNmA6x6tk__ZJoq7Q&usqp=CAU"
                         alt="Retail Admin">
@@ -19,9 +31,14 @@
             </li>
         </ng-template>
     </ul>
-    <div class="messageClass form-group mt-3 mb-0">
+    <div class="MessageClass form-group mt-3 mb-0">
         <input class="col-md-3 form-control" id="sendMessage" rows="3" placeholder="Type your message here..."
             [(ngModel)]="sendedMessage">
-        <button type="button" class="btn btn-primary col-md-2 mt-2" (click)="SendMessage()">Send</button>
+        <button type="button" class="sendMessageBtn btn btn-primary col-md-2 mt-2" (click)="SendMessage()">Send</button>
+    </div>
+    <div class="card NoKeyMessage">
+        <div class="card-body">
+            The message could not be sent because the keys were not exchanged.
+        </div>
     </div>
 </div>

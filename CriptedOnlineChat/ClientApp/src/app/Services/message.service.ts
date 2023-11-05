@@ -18,7 +18,6 @@ export class MessageService {
     }
 
     public async AddNewMessages(addedmessages: SendMessageDTO[]) {
-        console.log(addedmessages)
         addedmessages.forEach(async element => {
             let recipientLogin: string = (await this.AppDB.Contacts.filter(x => x.ContactId == element.senderId).first()).Login;
             let recipientPrivateKeyId: string = (await this.AppDB.Contacts.filter(x => x.ContactId == element.senderId).first()).PrivateKeyId;

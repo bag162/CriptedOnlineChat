@@ -14,9 +14,7 @@ namespace CriptedOnlineChat.DB.DBModels
         public long et { get; set; }
         public long es { get; set; }
 
-        [ForeignKey("SenderUserId")]
         public AppUser Sender { get; set; }
-        [ForeignKey("RecipientUserId")]
         public AppUser Recipient { get; set; }
     }
 }

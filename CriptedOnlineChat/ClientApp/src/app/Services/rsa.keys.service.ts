@@ -42,7 +42,7 @@ export class RSAKeysService {
             recipientUserId: recipientId, nDataJson: JSON.stringify(pubKey.n.data),
             ns: pubKey.n.s, nt: pubKey.n.t, eDataJson: JSON.stringify(pubKey.e.data), es: pubKey.e.s, et: pubKey.e.t
         };
-
+        console.log(sendedRsa)
         await this.WebSocketService.SendPublicRSAKey(sendedRsa);
     }
 

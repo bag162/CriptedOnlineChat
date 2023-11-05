@@ -7,22 +7,23 @@ import { MessageService, SendMessageDTO } from './message.service';
 import { SendRSAPublicKeyDTO } from './rsa.keys.service';
 import * as forge from 'node-forge';
 import { v4 as uuidv4 } from 'uuid';
+import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class WebSocketService {
     private HubConnection: HubConnection;
-    public baseUrl: string;
     private appDB: AppDB;
     private messageService: MessageService;
     private RSAService: RSAService;
-    constructor(@Inject('BASE_URL') baseUrl: string, appDB: AppDB, messageService: MessageService, RSAService: RSAService) {
-        this.baseUrl = baseUrl + "schatHub";
+    constructor(appDB: AppDB, messageService: MessageService, RSAService: RSAService) {
         this.messageService = messageService;
         this.appDB = appDB;
         this.RSAService = RSAService;
         this.HubConnection = new HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
-            .withUrl("http://localhost:5172/schatHub")
+            .withUrl("http://" + environment.basePath + ":" + environment.basePort + "/schatHub", {
+                transport: signalR.HttpTransportType.WebSockets
+            })
             .build();
         this.HubConnection.start();
         this.initWebSocket();
@@ -77,6 +78,7 @@ export class WebSocketService {
     }
 
     public async AddNewRSAKeysServer(keys: SendRSAPublicKeyDTO[]) {
+        console.log(keys)
         keys.forEach(async element => {
             // parsing data
             let insertedPubKey: PublicKey = { id: uuidv4() };
