@@ -39,7 +39,13 @@ export class ContactListComponent {
   }
 
   async ngOnInit() {
+    // заполняем лист контактов данными
     await this.fillContactList();
+    // заполняем лист конактов данными после добавления новых при обемене ключей
+    await this.DataService.updateContactList.subscribe(async (updateContactList: number) => {
+      this.contactList = [];
+      await this.fillContactList();
+    });
     // submint searsh input when pressing enter
     $(document).ready(function () {
       $('input').keydown(function (e: { keyCode: number; }) {
@@ -70,7 +76,7 @@ export class ContactListComponent {
     this.isSearchMode = true;
     // Получаем пользователей по запросу
     let newDispayedUsers: Contact[] = [];
-    let result = await this.userService.FindUsers(this.searchUserLogin); // TODO take preloader
+    let result = await this.userService.FindUsers(this.searchUserLogin);
     result.forEach(element => {
       var newContact: Contact = { Login: element.login, ContactId: element.id };
       newDispayedUsers.push(newContact);

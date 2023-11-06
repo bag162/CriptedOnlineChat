@@ -1,4 +1,4 @@
-using CriptedOnlineChat;
+﻿using CriptedOnlineChat;
 using CriptedOnlineChat.Controllers;
 using CriptedOnlineChat.DB;
 using CriptedOnlineChat.DB.DBModels;
@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
 /*IDENTITY*/
 
 
@@ -39,6 +38,9 @@ builder.Services.AddScoped<IMessagesService, MessageService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITradeKeysService, TradeKeysService>();
 builder.Services.AddScoped<SchatHub>();
+
+// Loggin
+
 
 /*OTHER*/
 
@@ -99,6 +101,5 @@ app.MapControllerRoute(
     pattern: "api/{controller}/{action}");
 
 app.MapHub<SchatHub>("/schatHub");
-app.MapFallbackToFile("index.html"); ;
-
+app.MapFallbackToFile("index.html");
 app.Run();

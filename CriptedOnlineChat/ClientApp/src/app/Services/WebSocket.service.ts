@@ -8,6 +8,7 @@ import { SendRSAPublicKeyDTO } from './rsa.keys.service';
 import * as forge from 'node-forge';
 import { v4 as uuidv4 } from 'uuid';
 import { environment } from 'src/environments/environment';
+import { DataService } from './data.service';
 
 @Injectable({ providedIn: 'root' })
 export class WebSocketService {
@@ -15,7 +16,9 @@ export class WebSocketService {
     private appDB: AppDB;
     private messageService: MessageService;
     private RSAService: RSAService;
-    constructor(appDB: AppDB, messageService: MessageService, RSAService: RSAService) {
+    private DataService: DataService;
+    constructor(appDB: AppDB, messageService: MessageService, RSAService: RSAService, dataService: DataService) {
+        this.DataService = dataService;
         this.messageService = messageService;
         this.appDB = appDB;
         this.RSAService = RSAService;
@@ -31,22 +34,25 @@ export class WebSocketService {
 
 
     async initWebSocket() {
-        await this.HubConnection.on("Test", message => { console.log(message) })
         await this.HubConnection.on("AddNewRSAKeys", rsaKeys => { this.AddNewRSAKeysServer(<SendRSAPublicKeyDTO[]>rsaKeys) })
-        await this.HubConnection.on("AddNewMessages", messages => {this.messageService.AddNewMessages(messages)})
+        await this.HubConnection.on("AddNewMessages", messages => { this.messageService.AddNewMessages(messages) })
+        this.HubConnection.on("UpdateData", data => { 
+            console.log("request to update data")
+            this.HubConnection.send("UpdateDataAsync") 
+        })
     }
 
     async sendMessage(message: SendMessageDTO) {
-        await this.HubConnection.send("SendMessage", message);
+        await this.HubConnection.send("SendMessageAsync", message);
     }
 
     async SendPublicRSAKey(rsaKey: SendRSAPublicKeyDTO) {
-        await this.HubConnection.send("SendRSAKeys", rsaKey);
+        await this.HubConnection.send("SendRSAKeysAsync", rsaKey);
     }
 
 
 
-    
+
     public async AddPublicKeyToLocalDB(key: forge.pki.rsa.PublicKey, isRecipientKey: boolean, idKey: string) {
         let pubKey: PublicKey = { id: idKey, n: key.n, e: key.e };
         if (isRecipientKey) {
@@ -111,11 +117,11 @@ export class WebSocketService {
                 newContact.PrivateKeyId = prtKeyId;
                 newContact.PublicKeyId = pubKeyId;
                 this.appDB.Contacts.add(newContact);
+                this.DataService.updateContactList.next();
             }
-            else
-            {
+            else {
                 var contact = await this.appDB.Contacts.filter(x => x.ContactId == element.senderUserId).first();
-                await this.appDB.Contacts.update(contact, { "PublicKeyForEncriptId" : insertedPubKey.id})
+                await this.appDB.Contacts.update(contact, { "PublicKeyForEncriptId": insertedPubKey.id })
             }
 
         });

@@ -23,7 +23,7 @@ export class LoginUserComponent {
         this.router = router;
     }
 
-    public async loginUser() //TODO получить и установить в базу данные о пользователе
+    public async loginUser() //TODO получить и установить в базу данные о пользователе и чистить всю localDB при входе
     {
         var result = await this.userService.LoginUser(this.userLoginDTO);
         if (result) {

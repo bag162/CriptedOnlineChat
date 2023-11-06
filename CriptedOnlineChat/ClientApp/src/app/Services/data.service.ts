@@ -5,4 +5,5 @@ import { Subject } from 'rxjs';
 export class DataService {
     
     public currentDisplayedLogin = new Subject<string>();
+    public updateContactList = new Subject<number>();
 } 

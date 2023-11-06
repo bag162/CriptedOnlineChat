@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 
 namespace CriptedOnlineChat.Controllers
@@ -33,31 +30,41 @@ namespace CriptedOnlineChat.Controllers
         }
 
 
-        public async Task SendRSAKeys(RSAKeyDTO rsaKey)
+        public async Task SendRSAKeysAsync(RSAKeyDTO rsaKey)
         {
             TradeKeys insertedKey = mapper.Map<TradeKeys>(rsaKey);
             insertedKey.id = Guid.NewGuid().ToString();
             await tradeKeyService.AddNewRSAKey(insertedKey);
+            string recipientLogin = userDBService.FindUserById(rsaKey.RecipientUserId).Result.UserName;
+            PingUserAsync(recipientLogin);
             return;
         }
 
-        public async Task SendMessage(SendMessageDTO message)
+        public async Task SendMessageAsync(SendMessageDTO message)
         {
             Message addedMessage = mapper.Map<Message>(message);
             await messagesService.AddNewMessage(addedMessage);
+            string recipientLogin = userDBService.FindUserById(message.RecipientId).Result.UserName;
+            PingUserAsync(recipientLogin);
             return;
 
         }
-        public override Task OnConnectedAsync()
+
+        public async Task UpdateDataAsync()
+        {
+            OnConnectedAsync();
+        }
+
+        public async override Task<Task> OnConnectedAsync()
         {
             string userId = userDBService.FindUsersByLogin(Context.User.Identity.Name).Result.Select(x => x.Id).FirstOrDefault();
-            SendUserNewRSAKeys(userId);
-            SendUserNewMessages(userId);
-
+            _logger.LogInformation("WebSocket Connected: " + userId);
+            SendUserNewRSAKeysAsync(userId);
+            SendUserNewMessagesAsync(userId);
             return base.OnConnectedAsync();
         }
 
-        private async Task SendUserNewRSAKeys(string userId)
+        private async Task SendUserNewRSAKeysAsync(string userId)
         {
             List<TradeKeys> newKeys = await tradeKeyService.GetRSAKeysByRecipientId(userId);
             if (newKeys.Count == 0)
@@ -71,12 +78,12 @@ namespace CriptedOnlineChat.Controllers
                 rSAKeyDTO.SenderLogin = userDBService.FindUserById(rSAKeyDTO.SenderUserId).Result.UserName;
                 sendedRsaKeys.Add(rSAKeyDTO);
             }
-
+            
             await Clients.User(Context.UserIdentifier).SendAsync("AddNewRSAKeys", sendedRsaKeys.ToArray());
             return;
         }
 
-        private async Task SendUserNewMessages(string userId)
+        private async Task SendUserNewMessagesAsync(string userId)
         {
             List<Message> newMessages = await messagesService.GetAllMessageByRecipientId(userId);
             if(newMessages.Count() == 0)
@@ -91,5 +98,13 @@ namespace CriptedOnlineChat.Controllers
 
             await Clients.User(Context.UserIdentifier).SendAsync("AddNewMessages", sendedMessages);
         }
+
+        private async Task PingUserAsync(string userLogin)
+        {
+            _logger.LogInformation("Ping User: " + userLogin);
+            await Clients.User(userLogin).SendAsync("UpdateData");
+        }
+
+        
     }
 }

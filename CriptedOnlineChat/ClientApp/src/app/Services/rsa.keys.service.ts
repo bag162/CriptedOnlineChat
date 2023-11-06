@@ -3,6 +3,7 @@ import { AppDB, Contact, PrivateKey, PublicKey } from 'src/db';
 import * as forge from 'node-forge';
 import { WebSocketService } from './websocket.service';
 import { RSAService } from './rsa.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({ providedIn: 'root' })
 export class RSAKeysService {
@@ -42,7 +43,6 @@ export class RSAKeysService {
             recipientUserId: recipientId, nDataJson: JSON.stringify(pubKey.n.data),
             ns: pubKey.n.s, nt: pubKey.n.t, eDataJson: JSON.stringify(pubKey.e.data), es: pubKey.e.s, et: pubKey.e.t
         };
-        console.log(sendedRsa)
         await this.WebSocketService.SendPublicRSAKey(sendedRsa);
     }
 
@@ -99,7 +99,3 @@ export class SendRSAPublicKeyDTO {
     public nDataJson: string = "";
     public eDataJson: string = "";
 }
-function uuidv4(): string {
-    throw new Error('Function not implemented.');
-}
-
