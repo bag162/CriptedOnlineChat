@@ -24,7 +24,7 @@ namespace CriptedOnlineChat.DBServices
         {
             List<TradeKeys> result = applicationDbContext.TradeKeys.Where(x => x.RecipientUserId == recppientId).ToList();
             applicationDbContext.TradeKeys.RemoveRange(result);
-            applicationDbContext.SaveChanges();
+            await applicationDbContext.SaveChangesAsync();
             return result;
         }
     }

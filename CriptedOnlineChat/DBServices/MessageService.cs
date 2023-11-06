@@ -21,7 +21,7 @@ namespace CriptedOnlineChat.DBServices
         {
             var messages = appContext.Messaages.AsQueryable().Where(x => x.RecipientId == recipientId).ToList();
             appContext.Messaages.RemoveRange(messages);
-            appContext.SaveChangesAsync();
+            await appContext.SaveChangesAsync();
             return messages;
         }
     }
