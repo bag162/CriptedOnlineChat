@@ -2,10 +2,10 @@
 using CriptedOnlineChat.Controllers.DTO;
 using CriptedOnlineChat.DB.DBModels;
 using CriptedOnlineChat.DBServices;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace CriptedOnlineChat.Controllers
@@ -35,8 +35,7 @@ namespace CriptedOnlineChat.Controllers
             TradeKeys insertedKey = mapper.Map<TradeKeys>(rsaKey);
             insertedKey.id = Guid.NewGuid().ToString();
             await tradeKeyService.AddNewRSAKey(insertedKey);
-            string recipientLogin = userDBService.FindUserById(rsaKey.RecipientUserId).Result.UserName;
-            PingUserAsync(recipientLogin);
+            PingUserAsync(userDBService.FindUserById(rsaKey.RecipientUserId).Result.UserName);
             return;
         }
 
@@ -44,8 +43,7 @@ namespace CriptedOnlineChat.Controllers
         {
             Message addedMessage = mapper.Map<Message>(message);
             await messagesService.AddNewMessage(addedMessage);
-            string recipientLogin = userDBService.FindUserById(message.RecipientId).Result.UserName;
-            PingUserAsync(recipientLogin);
+            PingUserAsync(userDBService.FindUserById(message.RecipientId).Result.UserName);
             return;
 
         }
